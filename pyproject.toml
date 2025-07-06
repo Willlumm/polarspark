@@ -1,0 +1,7 @@
+[project]
+name = "polarspark"
+version = "0.1.0"
+description = "A drop-in replacement for PySpark that uses Polars instead of Spark"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []
