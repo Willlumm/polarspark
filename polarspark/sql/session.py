@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Iterable
 from typing import Any
 
@@ -14,7 +16,7 @@ from polarspark.sql import DataFrame
 
 class SparkSession:
     class Builder:
-        def getOrCreate(self) -> "SparkSession":
+        def getOrCreate(self) -> SparkSession:
             return SparkSession()
 
     def createDataFrame(

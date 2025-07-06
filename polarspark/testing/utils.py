@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import overload
 
 import polars as pl
@@ -38,8 +39,6 @@ def assertDataFrameEqual(
     if isinstance(actual, polarspark.sql.DataFrame) and isinstance(
         expected, polarspark.sql.DataFrame
     ):
-        print(actual.df)
-        print(expected.df)
         polars.testing.assert_frame_equal(
             left=actual.df, right=expected.df, check_row_order=checkRowOrder
         )
@@ -59,7 +58,8 @@ def assertDataFrameEqual(
         )
         return
 
-    raise TypeError(
+    message = (
         "Dataframes must be the same type."
         f" Got actual: {type(actual)}, expected: {type(expected)}."
     )
+    raise TypeError(message)

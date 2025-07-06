@@ -7,7 +7,16 @@ requires-python = ">=3.9"
 dependencies = ["polars>=1.31.0"]
 
 [dependency-groups]
-dev = ["mypy>=1.16.1", "pyspark>=4.0.0", "ruff>=0.12.2"]
+dev = [
+    "mypy>=1.16.1",
+ "pyspark>=4.0.0",
+ "pytest>=8.4.1",
+ "ruff>=0.12.2",
+]
+
+[tool.mypy]
+files = ["polarspark"]
+strict = true
 
 [tool.ruff.lint]
 select = ["ALL"]

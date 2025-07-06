@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Any
 
 import polars as pl
 from polars.expr.whenthen import ChainedThen, Then
@@ -16,59 +16,59 @@ class Column:
         self.expr = expr
         self._order_descending = order_descending
 
-    def __and__(self, value: object) -> Self:  # type: ignore
+    def __and__(self, value: object) -> "Column":
         cls = type(self)
         if isinstance(value, cls):
             return cls(self.expr & value.expr)
         return cls(self.expr & pl.lit(value))
 
-    def __eq__(self, value: object) -> Self:  # type: ignore
+    def __eq__(self, value: object) -> "Column":  # type: ignore[override]
         cls = type(self)
         if isinstance(value, cls):
             return cls(self.expr == value.expr)
         return cls(self.expr == pl.lit(value))
 
-    def __ge__(self, value: object) -> Self:  # type: ignore
+    def __ge__(self, value: object) -> "Column":
         cls = type(self)
         if isinstance(value, cls):
             return cls(self.expr >= value.expr)
         return cls(self.expr >= pl.lit(value))
 
-    def __invert__(self) -> Self:  # type: ignore
+    def __invert__(self) -> "Column":
         cls = type(self)
         return cls(~self.expr)
 
-    def __ne__(self, value: object) -> Self:  # type: ignore
+    def __ne__(self, value: object) -> "Column":  # type: ignore[override]
         cls = type(self)
         if isinstance(value, cls):
             return cls(self.expr != value.expr)
         return cls(self.expr != pl.lit(value))
 
-    def __or__(self, value: object) -> Self:
+    def __or__(self, value: object) -> "Column":
         cls = type(self)
         if isinstance(value, cls):
             return cls(self.expr | value.expr)
         return cls(self.expr | pl.lit(value))
 
-    def alias(self, alias: str) -> Self:
+    def alias(self, alias: str) -> "Column":
         cls = type(self)
         expr = self.expr.alias(name=alias)
         return cls(expr)
 
-    def asc(self) -> Self:
+    def asc(self) -> "Column":
         cls = type(self)
         return cls(self.expr, order_descending=False)
 
-    def cast(self, dataType: T.DataType) -> Self:
+    def cast(self, dataType: T.DataType) -> "Column":
         cls = type(self)
         expr = self.expr.cast(convert_pyspark_type_to_polars(data_type=dataType))
         return cls(expr)
 
-    def desc(self) -> Self:
+    def desc(self) -> "Column":
         cls = type(self)
         return cls(self.expr, order_descending=True)
 
-    def isin(self, *cols: Any) -> Self:
+    def isin(self, *cols: Any) -> "Column":
         cls = type(self)
         if (
             len(cols) == 1
@@ -80,17 +80,17 @@ class Column:
             expr = self.expr.is_in(cols)
         return cls(expr)
 
-    def isNotNull(self) -> Self:
+    def isNotNull(self) -> "Column":
         cls = type(self)
         expr = self.expr.is_not_null()
         return cls(expr)
 
-    def isNull(self) -> Self:
+    def isNull(self) -> "Column":
         cls = type(self)
         expr = self.expr.is_null()
         return cls(expr)
 
-    def otherwise(self, value: Any) -> Self:
+    def otherwise(self, value: Any) -> "Column":
         if not (isinstance(self.expr, Then) or isinstance(self.expr, ChainedThen)):
             raise AttributeError("`otherwise()` can only be used after `when()`")
         if isinstance(value, Column):
@@ -99,7 +99,7 @@ class Column:
         expr = self.expr.otherwise(value)
         return cls(expr)
 
-    def over(self, window: "WindowSpec") -> Self:
+    def over(self, window: "WindowSpec") -> "Column":
         cls = type(self)
         expr = self.expr.over(
             partition_by=window.partition_exprs,
@@ -108,7 +108,7 @@ class Column:
         )
         return cls(expr)
 
-    def when(self, condition: Self, value: Any) -> Self:
+    def when(self, condition: "Column", value: Any) -> "Column":
         if not (isinstance(self.expr, Then) or isinstance(self.expr, ChainedThen)):
             raise AttributeError("`when()` can only be used after `then()`")
         if isinstance(value, Column):

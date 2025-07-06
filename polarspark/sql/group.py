@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 from collections.abc import Sequence
-from typing import Any, Self
+from typing import Any
 
 import polars as pl
+from typing_extensions import Self
 
 from polarspark.sql.column import Column
 from polarspark.sql.dataframe import DataFrame

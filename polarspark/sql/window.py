@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from collections.abc import Sequence
-from typing import Self
 
 import polars as pl
 
@@ -34,11 +35,11 @@ class WindowSpec:
     def order_exprs(self) -> list[pl.Expr]:
         return [column.expr for column in self.order_columns]
 
-    def partitionBy(self, *cols: Column | str | Sequence[Column | str]) -> Self:
+    def partitionBy(self, *cols: Column | str | Sequence[Column | str]) -> WindowSpec:
         self.partition_columns = get_columns(*cols)
         return self
 
-    def orderBy(self, *cols: Column | str | Sequence[Column | str]) -> Self:
+    def orderBy(self, *cols: Column | str | Sequence[Column | str]) -> WindowSpec:
         self.order_columns = get_columns(*cols)
         return self
 

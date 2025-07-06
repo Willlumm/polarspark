@@ -1,11 +1,13 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, Union
 
 import polars as pl
 from pyspark.sql import types as T
 
 TypeSource = Literal["sql", "polars", "pyspark"]
-DataType = pl.DataType | T.DataType | str
+DataType = Union[pl.DataType, T.DataType, str]
 
 
 @dataclass(frozen=True)

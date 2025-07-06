@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from collections.abc import Sequence
 from itertools import chain
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Any
 
 import polars as pl
 from pyspark.sql import Row
@@ -14,6 +16,53 @@ if TYPE_CHECKING:
 
 
 class DataFrame:
+    """A distributed collection of data grouped into named columns.
+
+    Examples
+    --------
+    A :class:`DataFrame` is equivalent to a relational table in Spark SQL,
+    and can be created using various functions in :class:`SparkSession`:
+
+    >>> people = spark.createDataFrame([
+    ...     {"deptId": 1, "age": 40, "name": "Hyukjin Kwon", "gender": "M", "salary": 50},
+    ...     {"deptId": 1, "age": 50, "name": "Takuya Ueshin", "gender": "M", "salary": 100},
+    ...     {"deptId": 2, "age": 60, "name": "Xinrong Meng", "gender": "F", "salary": 150},
+    ...     {"deptId": 3, "age": 20, "name": "Haejoon Lee", "gender": "M", "salary": 200}
+    ... ])
+
+    Once created, it can be manipulated using the various domain-specific-language
+    (DSL) functions defined in: :class:`DataFrame`, :class:`Column`.
+
+    To select a column from the :class:`DataFrame`, use the apply method:
+
+    >>> age_col = people.age
+
+    A more concrete example:
+
+    >>> # To create DataFrame using SparkSession
+    ... department = spark.createDataFrame([
+    ...     {"id": 1, "name": "PySpark"},
+    ...     {"id": 2, "name": "ML"},
+    ...     {"id": 3, "name": "Spark SQL"}
+    ... ])
+
+    >>> people.filter(people.age > 30).join(
+    ...     department, people.deptId == department.id).groupBy(
+    ...     department.name, "gender").agg(
+    ...         {"salary": "avg", "age": "max"}).sort("max(age)").show()
+    +-------+------+-----------+--------+
+    |   name|gender|avg(salary)|max(age)|
+    +-------+------+-----------+--------+
+    |PySpark|     M|       75.0|      50|
+    |     ML|     F|      150.0|      60|
+    +-------+------+-----------+--------+
+
+    Notes
+    -----
+    A DataFrame should only be created as described above. It should not be directly
+    created via using the constructor.
+    """
+
     def __init__(self, df: pl.DataFrame) -> None:
         self.df = df
 
@@ -65,7 +114,7 @@ class DataFrame:
             df = self.df.filter(condition.expr)
         return cls(df)
 
-    def groupBy(self, *cols: Column | str) -> "GroupedData":
+    def groupBy(self, *cols: Column | str) -> GroupedData:
         exprs = [col.expr if isinstance(col, Column) else col for col in cols]
         from polarspark.sql.group import GroupedData
 
