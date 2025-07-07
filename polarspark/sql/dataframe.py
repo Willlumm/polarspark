@@ -73,6 +73,14 @@ class DataFrame:
     @property
     def schema(self) -> T.StructType:
         return convert_polars_schema_to_pyspark(schema=self.df.schema)
+    
+
+    def __getattr__(self, name: str) -> Column:
+        if name not in self.columns:
+            raise PySparkAttributeError(
+                errorClass="ATTRIBUTE_NOT_SUPPORTED", messageParameters={"attr_name": name}
+            )
+        return Column(self.df[name])
 
     def agg(self, *exprs: Column) -> Self:
         return self.select(*exprs)
